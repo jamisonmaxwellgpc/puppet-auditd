@@ -380,7 +380,7 @@ class auditd (
   $service_enable          = $::auditd::params::service_enable,
 
   # Optionally define rules through main class
-  $rules                   = {},
+  $rules                   = lookup(auditd::rules, 'hash', 'unique', 'undef')
 
 ) inherits auditd::params {
 

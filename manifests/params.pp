@@ -8,7 +8,12 @@ class auditd::params {
       $manage_audit_files = false
       $rules_file         = '/etc/audit/rules.d/audit.rules'
       $has_audisp_config  = true
-      $audisp_dir         = '/etc/audisp'
+
+      if versioncmp($::operatingsystemrelease, '11') >= 0 {
+        $audisp_dir         = '/etc/audit'
+      } else {
+        $audisp_dir         = '/etc/audisp'
+      }
 
       case $::lsbmajdistrelease {
         '8': {

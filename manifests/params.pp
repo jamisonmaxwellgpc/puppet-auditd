@@ -1,7 +1,7 @@
 class auditd::params {
 
   # OS specific variables.
-  case $::osfamily {
+  case $::facts['os']['family'] {
     'Debian': {
       $package_name       = 'auditd'
       $audisp_package     = 'audispd-plugins'
@@ -90,7 +90,7 @@ class auditd::params {
       $audisp_dir         = '/etc/audisp'
     }
     default: {
-      fail("${::osfamily} is not supported by auditd")
+      fail("${::facts['os']['family']} is not supported by auditd")
     }
   }
 

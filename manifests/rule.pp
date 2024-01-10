@@ -13,7 +13,6 @@ define auditd::rule($content='', $order=10) {
   {
     fail('$order must be a string or an integer')
   }
-  validate_string($body)
 
   concat::fragment{ "auditd_fragment_${name}":
     target  => $auditd::rules_file,

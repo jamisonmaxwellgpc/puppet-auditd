@@ -9,7 +9,7 @@ define auditd::rule($content='', $order=10) {
     $body = $content
   }
 
-  if (!is_numeric($order) and !is_string($order))
+  if (!$order =~ Numeric) and (!$order =~ String)
   {
     fail('$order must be a string or an integer')
   }

@@ -1,16 +1,22 @@
 class auditd::params {
 
   # OS specific variables.
-  case $::osfamily {
+  case $::facts['os']['family'] {
     'Debian': {
       $package_name       = 'auditd'
       $audisp_package     = 'audispd-plugins'
       $manage_audit_files = false
       $rules_file         = '/etc/audit/rules.d/audit.rules'
-      $has_audisp_config  = true
-      $audisp_dir         = '/etc/audisp'
 
-      case $::lsbmajdistrelease {
+      if versioncmp($::facts['os']['release']['full'], '11') >= 0 {
+        $audisp_dir         = '/etc/audit'
+        $has_audisp_config  = false
+      } else {
+        $audisp_dir         = '/etc/audisp'
+        $has_audisp_config  = true
+      }
+
+      case $::facts['os']['distro']['release']['major'] {
         '8': {
           $service_restart = '/bin/systemctl restart auditd'
           $service_stop    = '/bin/systemctl stop auditd'
@@ -25,7 +31,7 @@ class auditd::params {
       $package_name       = 'audit'
       $has_audisp_config  = true
       $audisp_dir         = '/etc/audisp'
-      if versioncmp($::operatingsystemrelease, '12') >= 0 and $::operatingsystem == 'SLES' {
+      if versioncmp($::facts['os']['release']['full'], '12') >= 0 and $::facts['os']['name'] == 'SLES' {
         $audisp_package     = 'audit-audispd-plugins'
         $manage_audit_files = true
         $rules_file         = '/etc/audit/rules.d/puppet.rules'
@@ -45,7 +51,7 @@ class auditd::params {
       $audisp_package     = 'audispd-plugins'
       $manage_audit_files = true
 
-      if versioncmp($::operatingsystemrelease, '8') >= 0 {
+      if versioncmp($::facts['os']['release']['full'], '8') >= 0 {
         $has_audisp_config = false
         $audisp_dir        = '/etc/audit'
       } else {
@@ -53,7 +59,7 @@ class auditd::params {
         $audisp_dir        = '/etc/audisp'
       }
 
-      if $::operatingsystem != 'Amazon' and versioncmp($::operatingsystemrelease, '7') >= 0 {
+      if $::facts['os']['name'] != 'Amazon' and versioncmp($::facts['os']['release']['full'], '7') >= 0 {
         $rules_file      = '/etc/audit/rules.d/puppet.rules'
         $service_restart = '/usr/libexec/initscripts/legacy-actions/auditd/restart'
         $service_stop    = '/usr/libexec/initscripts/legacy-actions/auditd/stop'
@@ -84,7 +90,7 @@ class auditd::params {
       $audisp_dir         = '/etc/audisp'
     }
     default: {
-      fail("${::osfamily} is not supported by auditd")
+      fail("${::facts['os']['family']} is not supported by auditd")
     }
   }
 
